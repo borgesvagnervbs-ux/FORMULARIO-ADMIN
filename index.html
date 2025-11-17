@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel Admin - CNES</title>
+
+<!-- jQuery e jQuery Mask -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<!-- Firebase v8 (compat) - MUST be loaded BEFORE firebase-config.js -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <link rel="stylesheet" href="admin.css" />
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">CNES - Painel Admin</div>
+      <nav>
+        <ul>
+          <li class="nav-item active" data-view="dashboard">Tela Principal</li>
+          <li class="nav-item" data-view="reports">Relatórios</li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <small>Conectado ao Firestore</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="pageTitle">Tela Principal</h1>
+        <div class="controls">
+          <div class="status-tabs">
+            <button class="tab-btn active" data-status="recebidos">Recebidos</button>
+            <button class="tab-btn" data-status="editados">Editados</button>
+            <button class="tab-btn" data-status="enviados">Enviados</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD / TELA PRINCIPAL -->
+      <section id="dashboard" class="view">
+        <div class="cards-container" id="cardsContainer">
+          <!-- Cards serão renderizados aqui -->
+        </div>
+        <div id="emptyMessage" class="empty">Nenhum registro encontrado.</div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="reports" class="view hidden">
+        <div class="filters">
+          <div class="filter-row">
+            <input type="text" id="f_nome" placeholder="Nome" />
+            <input type="text" id="f_cpf" placeholder="CPF (formato 000.000.000-00)" />
+            <input type="text" id="f_estabelecimento" placeholder="Estabelecimento" />
+            <input type="text" id="f_funcao" placeholder="Função / Especialidade" />
+          </div>
+          <div class="filter-row">
+            <select id="f_ufConselho">
+              <option value="">UF Conselho</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option>
+              <option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option>
+              <option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option>
+              <option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option>
+              <option>SE</option><option>TO</option>
+            </select>
+
+            <select id="f_atendeSus">
+              <option value="">Atende SUS?</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
+            </select>
+
+            <select id="f_status">
+              <option value="">Status</option>
+              <option value="recebidos">recebidos</option>
+              <option value="editados">editados</option>
+              <option value="enviados">enviados</option>
+            </select>
+
+            <div class="date-range">
+              <input type="date" id="f_dateFrom" />
+              <input type="date" id="f_dateTo" />
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button id="applyFilters" class="btn primary">Aplicar Filtros</button>
+            <button id="clearFilters" class="btn">Limpar filtros</button>
+            <div class="page-controls-right">
+              <label>Mostrar
+                <select id="perPage">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              registros</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-summary">
+          <div>Total filtrado: <span id="totalFiltered">0</span></div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Estabelecimento</th>
+                <th>Função</th>
+                <th>UF Conselho</th>
+                <th>Atende SUS</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Linhas de resultados -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <button id="prevPage" class="btn">« Anterior</button>
+          <span>Página <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+          <button id="nextPage" class="btn">Próxima »</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal de edição -->
+  <div id="editModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Editar Registro</h3>
+        <button id="closeModal" class="close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editForm">
+          <!-- Apenas alguns campos principais para edição rápida -->
+          <div class="form-row">
+            <label>Nome</label>
+            <input type="text" id="e_nome" />
+          </div>
+          <div class="form-row">
+            <label>CPF</label>
+            <input type="text" id="e_cpf" />
+          </div>
+          <div class="form-row">
+            <label>Estabelecimento</label>
+            <input type="text" id="e_estabelecimento" />
+          </div>
+          <div class="form-row">
+            <label>Função</label>
+            <input type="text" id="e_funcao" />
+          </div>
+          <div class="form-row">
+            <label>UF Conselho</label>
+            <input type="text" id="e_ufConselho" />
+          </div>
+          <div class="form-row">
+            <label>Atende SUS</label>
+            <select id="e_atendeSus">
+              <option value="">Não Informado</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Status</label>
+            <select id="e_status">
+              <option value="recebidos">recebidos</option>
+              <option value="editados">editados</option>
+              <option value="enviados">enviados</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="saveEdit" class="btn primary">Salvar</button>
+            <button type="button" id="cancelEdit" class="btn">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<!-- Nosso arquivo que inicializa o Firebase e expõe cnesCollection -->
+<script src="firebase-config.js"></script>
+
+<!-- Seu script de formulário (agora depende de cnesCollection estar pronto) -->
+<script src="admin.js"></script>
+
+</body>
+</html>
