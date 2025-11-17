@@ -5,16 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Painel Admin - CNES</title>
 
-<!-- jQuery e jQuery Mask -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+  <!-- jQuery e jQuery Mask -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
-<!-- Firebase v8 (compat) - MUST be loaded BEFORE firebase-config.js -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Firebase v8 (compat) - MUST be loaded BEFORE firebase-config.js -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
   <link rel="stylesheet" href="admin.css" />
-
 </head>
 <body>
   <div class="layout">
@@ -137,70 +136,243 @@
           <button id="nextPage" class="btn">Próxima »</button>
         </div>
       </section>
+
+      <!-- EDIT VIEW: tela inteira de edição (opção B) -->
+      <section id="editView" class="view hidden">
+        <div class="edit-container">
+          <div class="edit-header">
+            <button id="backToDashboard" class="btn">« Voltar</button>
+            <h2>Editar Registro (Tela do Cliente)</h2>
+            <div id="editMeta" class="meta small"></div>
+          </div>
+
+          <div class="edit-body">
+            <form id="adminEditForm">
+              <!-- Repliquei os principais campos do index.html, com prefixo "a_" -->
+              <section class="form-section">
+                <h4>DADOS DE IDENTIFICAÇÃO</h4>
+                <div class="form-group full-width">
+                    <label><span class="required">*</span>Nome do profissional:</label>
+                    <input type="text" id="a_nome" name="nome" required>
+                </div>
+                <div class="form-group half-width">
+                    <label><span class="required">*</span>CPF:</label>
+                    <input type="text" id="a_cpf" name="cpf" required>
+                </div>
+                <div class="form-group half-width">
+                    <label><span class="required">*</span>Data de nascimento:</label>
+                    <input type="text" id="a_dataNascimento" name="dataNascimento" required placeholder="dd/mm/aaaa">
+                </div>
+                <div class="form-group full-width">
+                    <label>Nome da mãe:</label>
+                    <input type="text" id="a_nomeMae" name="nomeMae">
+                </div>
+                <div class="form-group smaller-width">
+                    <label>Município de nascimento:</label>
+                    <input type="text" id="a_municipioNascimento" name="municipioNascimento">
+                </div>
+                <div class="form-group mini-width">
+                    <label>UF:</label>
+                    <select id="a_ufNascimento" name="ufNascimento">
+                        <option value="">UF</option>
+                        <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                        <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                        <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                        <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                        <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                        <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                        <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                        <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                        <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                    </select>
+                </div>
+                <div class="form-group four-width">
+                    <label>Identidade:</label>
+                    <input type="text" id="a_identidade" name="identidade">
+                </div>
+                <div class="form-group four-width">
+                    <label>UF Emissor:</label>
+                    <select id="a_ufEmissorId" name="ufEmissorId">
+                        <option value="">UF</option>
+                        <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                        <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                        <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                        <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                        <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                        <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                        <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                        <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                        <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                    </select>
+                </div>
+
+                <div class="form-group half-width">
+                    <label>Órgão emissor:</label>
+                    <input type="text" id="a_orgaoEmissor" name="orgaoEmissor">
+                </div>
+                <div class="form-group half-width">
+                    <label>Data da emissão:</label>
+                    <input type="text" id="a_dataEmissao" name="dataEmissao" placeholder="dd/mm/aaaa">
+                </div>
+              </section>
+
+              <section class="form-section">
+                <h4>DADOS RESIDENCIAIS</h4>
+                <div class="form-group two-thirds-width">
+                    <label>Rua:</label>
+                    <input type="text" id="a_rua" name="rua">
+                </div>
+                <div class="form-group one-third-width">
+                    <label>Número:</label>
+                    <input type="text" id="a_numero" name="numero">
+                </div>
+                <div class="form-group half-width">
+                    <label>Complemento:</label>
+                    <input type="text" id="a_complemento" name="complemento">
+                </div>
+                <div class="form-group half-width">
+                    <label>Bairro/distrito:</label>
+                    <input type="text" id="a_bairro" name="bairro">
+                </div>
+                <div class="form-group half-width">
+                    <label>CEP:</label>
+                    <div class="cep-group">
+                        <input type="text" id="a_cep" name="cep">
+                        <button type="button" id="a_btnBuscarCep" class="secondary-btn">Buscar CEP</button>
+                    </div>
+                </div>
+                <div class="form-group half-width">
+                    <label>Município:</label>
+                    <input type="text" id="a_municipioResidencial" name="municipioResidencial">
+                </div>
+                <div class="form-group half-width">
+                    <label>Telefone:</label>
+                    <input type="text" id="a_telefone" name="telefone" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="form-group half-width">
+                    <label>E-mail:</label>
+                    <input type="email" id="a_email" name="email">
+                </div>
+              </section>
+
+              <section class="form-section">
+                <h4>DADOS PROFISSIONAIS</h4>
+                <div class="form-group two-thirds-width">
+                    <label><span class="required">*</span>Estabelecimento:</label>
+                    <input type="text" id="a_estabelecimento" name="estabelecimento" required>
+                </div>
+                <div class="form-group one-third-width">
+                    <label><span class="required">*</span>Data de início na unidade de saúde:</label>
+                    <input type="text" id="a_dataInicio" name="dataInicio" required placeholder="dd/mm/aaaa">
+                </div>
+                <div class="form-group quarter-width">
+                    <label><span class="required">*</span>Carga horária semanal:</label>
+                    <input type="number" id="a_cargaHoraria" name="cargaHoraria" min="1" required>
+                </div>
+                <div class="form-group half-width">
+                    <label><span class="required">*</span>Função/Especialidade/CBO:</label>
+                    <input type="text" id="a_funcao" name="funcao" required>
+                </div>
+                <div class="form-group three-quarters-width">
+                    <label>Escolaridade:</label>
+                    <select id="a_escolaridade" name="escolaridade">
+                        <option value="">Selecione a Escolaridade</option>
+                        <option value="Fundamental Incompleto">Fundamental Incompleto</option>
+                        <option value="Fundamental Completo">Fundamental Completo</option>
+                        <option value="Médio Incompleto">Médio Incompleto</option>
+                        <option value="Médio Completo">Médio Completo</option>
+                        <option value="Superior Incompleto">Superior Incompleto</option>
+                        <option value="Superior Completo">Superior Completo</option>
+                        <option value="Pós-Graduação">Pós-Graduação</option>
+                        <option value="Mestrado">Mestrado</option>
+                        <option value="Doutorado">Doutorado</option>
+                    </select>
+                </div>
+                <div class="form-group three-eighths-width">
+                    <label><span class="required">*</span>Número do registro no conselho de classe:</label>
+                    <input type="text" id="a_registroConselho" name="registroConselho" required>
+                </div>
+                <div class="form-group one-eighth-width">
+                    <label>UF Conselho:</label>
+                    <select id="a_ufConselho" name="ufConselho">
+                        <option value="">UF</option>
+                        <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                        <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                        <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                        <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                        <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                        <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                        <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                        <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                        <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                    </select>
+                </div>
+
+                <div class="form-group radio-group full-width">
+                    <label><span class="required">*</span>VÍNCULO COM O ESTABELECIMENTO:</label>
+                    <div class="vinculo-group">
+                        <div class="sub-group">
+                            <input type="radio" id="a_vinculo_clt" name="a_vinculoEstabelecimento" value="CLT" required>
+                            <label for="a_vinculo_clt">CLT</label>
+                            <input type="radio" id="a_vinculo_terceirizado" name="a_vinculoEstabelecimento" value="Terceirizado">
+                            <label for="a_vinculo_terceirizado">Terceirizado</label>
+                            <input type="radio" id="a_vinculo_contratoEmergencial" name="a_vinculoEstabelecimento" value="Contrato Emergencial">
+                            <label for="a_vinculo_contratoEmergencial">Contrato Emergencial</label>
+                            <input type="radio" id="a_vinculo_processoSeletivo" name="a_vinculoEstabelecimento" value="Processo Seletivo">
+                            <label for="a_vinculo_processoSeletivo">Processo Seletivo</label>
+                            <input type="radio" id="a_vinculoEstabelecimento_estatutario" name="a_vinculoEstabelecimento" value="Estatutário" required>
+                            <label for="a_vinculoEstabelecimento_estatutario">Estatutário</label>
+                            <input type="radio" id="a_vinculoEstabelecimento_autonomo" name="a_vinculoEstabelecimento" value="Autônomo">
+                            <label for="a_vinculoEstabelecimento_autonomo">Autônomo</label>
+                            <input type="radio" id="a_vinculoEstabelecimento_residente" name="a_vinculoEstabelecimento" value="Residente">
+                            <label for="a_vinculoEstabelecimento_residente">Residente</label>
+                            <input type="radio" id="a_vinculoEstabelecimento_estagiario" name="a_vinculoEstabelecimento" value="Estagiário">
+                            <label for="a_vinculoEstabelecimento_estagiario">Estagiário</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Informar a empresa/local/instituição que tem o vínculo:</label>
+                    <input type="text" id="a_empresaVinculo" name="empresaVinculo" placeholder="Nome da Empresa">
+                </div>
+                <div class="form-group full-width">
+                    <label>CNPJ:</label>
+                    <input type="text" id="a_CNPJ" name="CNPJ" placeholder="00.000.000/0000-00">
+                </div>
+
+                <div class="form-group radio-group atende-sus-group">
+                    <label>Atende SUS:</label>
+                    <div class="atende-sus-options">
+                        <label for="a_atendeSus_sim">Sim</label>
+                        <input type="radio" id="a_atendeSus_sim" name="a_atendeSus" value="Sim">
+                    </div>
+                    <div class="atende-sus-options">
+                        <label for="a_atendeSus_nao">Não</label>
+                        <input type="radio" id="a_atendeSus_nao" name="a_atendeSus" value="Não">
+                    </div>
+                </div>
+              </section>
+
+              <p class="nota">**Todos os campos com <span class="required">*</span> são obrigatórios.</p>
+
+              <div class="modal-actions" style="margin-top:18px;">
+                <button type="button" id="saveAsEdited" class="btn primary">Salvar como EDITADO</button>
+                <button type="button" id="saveAsSent" class="btn">Salvar como ENVIADO</button>
+                <button type="button" id="cancelEditFull" class="btn">Cancelar</button>
+              </div>
+            </form>
+            <div id="adminEditMessage" class="hidden" style="margin-top:12px;"></div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
-  <!-- Modal de edição -->
-  <div id="editModal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Editar Registro</h3>
-        <button id="closeModal" class="close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="editForm">
-          <!-- Apenas alguns campos principais para edição rápida -->
-          <div class="form-row">
-            <label>Nome</label>
-            <input type="text" id="e_nome" />
-          </div>
-          <div class="form-row">
-            <label>CPF</label>
-            <input type="text" id="e_cpf" />
-          </div>
-          <div class="form-row">
-            <label>Estabelecimento</label>
-            <input type="text" id="e_estabelecimento" />
-          </div>
-          <div class="form-row">
-            <label>Função</label>
-            <input type="text" id="e_funcao" />
-          </div>
-          <div class="form-row">
-            <label>UF Conselho</label>
-            <input type="text" id="e_ufConselho" />
-          </div>
-          <div class="form-row">
-            <label>Atende SUS</label>
-            <select id="e_atendeSus">
-              <option value="">Não Informado</option>
-              <option value="Sim">Sim</option>
-              <option value="Não">Não</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <label>Status</label>
-            <select id="e_status">
-              <option value="recebidos">recebidos</option>
-              <option value="editados">editados</option>
-              <option value="enviados">enviados</option>
-            </select>
-          </div>
+  <!-- Nosso arquivo que inicializa o Firebase e expõe cnesCollection -->
+  <script src="firebase-config.js"></script>
 
-          <div class="modal-actions">
-            <button type="button" id="saveEdit" class="btn primary">Salvar</button>
-            <button type="button" id="cancelEdit" class="btn">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-<!-- Nosso arquivo que inicializa o Firebase e expõe cnesCollection -->
-<script src="firebase-config.js"></script>
-
-<!-- Seu script de formulário (agora depende de cnesCollection estar pronto) -->
-<script src="admin.js"></script>
-
+  <!-- Script do admin (entregue abaixo como admin.js) -->
+  <script src="admin.js"></script>
 </body>
 </html>
